@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Home Server</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="manifest" href="/manifest.json">
+</head>
+<body>
+
+  <!-- Navigation tabs, one per feature -->
+  <nav>
+    <button onclick="showTab('todos')">To-Do</button>
+    <button onclick="showTab('shopping')">Shopping</button>
+    <button onclick="showTab('timers')">Timers</button>
+    <button onclick="showTab('recipes')">Recipes</button>
+  </nav>
+
+  <!-- Each section is hidden/shown by showTab() -->
+  <main>
+
+    <section id="tab-todos">
+      <h2>To-Do List</h2>
+      <div id="todo-form">
+        <input type="text" id="todo-input" placeholder="New task..." />
+        <button onclick="addTodo()">Add</button>
+      </div>
+      <ul id="todo-list"></ul>
+    </section>
+
+    <section id="tab-shopping" style="display:none">
+      <h2>Shopping List</h2>
+      <div>
+        <input type="text" id="shopping-input" placeholder="New item..." />
+        <button onclick="addShoppingItem()">Add</button>
+        <button onclick="clearChecked()">Clear checked</button>
+      </div>
+      <ul id="shopping-list"></ul>
+    </section>
+
+    <section id="tab-timers" style="display:none">
+      <h2>Timers</h2>
+      <div>
+        <input type="text" id="timer-label" placeholder="Label (e.g. Pasta)" />
+        <input type="number" id="timer-duration" placeholder="Seconds" min="1" />
+        <button onclick="addTimer()">Save preset</button>
+      </div>
+      <ul id="timer-list"></ul>
+      <!-- Active countdown display -->
+      <div id="active-timer" style="display:none">
+        <h3 id="timer-name"></h3>
+        <p id="timer-display" style="font-size:2em"></p>
+        <button onclick="stopTimer()">Stop</button>
+      </div>
+    </section>
+
+    <section id="tab-recipes" style="display:none">
+      <h2>Recipes</h2>
+      <button onclick="showRecipeForm()">New recipe</button>
+      <ul id="recipe-list"></ul>
+      <div id="recipe-form" style="display:none">
+        <input type="text" id="recipe-title" placeholder="Title" />
+        <textarea id="recipe-ingredients" placeholder="Ingredients (one per line)" rows="5"></textarea>
+        <textarea id="recipe-steps" placeholder="Steps" rows="8"></textarea>
+        <button onclick="saveRecipe()">Save</button>
+        <button onclick="hideRecipeForm()">Cancel</button>
+      </div>
+      <div id="recipe-detail" style="display:none">
+        <button onclick="closeRecipe()">← Back</button>
+        <h3 id="recipe-detail-title"></h3>
+        <h4>Ingredients</h4>
+        <pre id="recipe-detail-ingredients"></pre>
+        <h4>Steps</h4>
+        <pre id="recipe-detail-steps"></pre>
+        <button onclick="deleteRecipe()">Delete</button>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="/js/app.js"></script>
+</body>
+</html>
