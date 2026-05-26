@@ -11,6 +11,7 @@ function showTab(name) {
   if (name === 'shopping') loadShopping();
   if (name === 'timers') loadTimers();
   if (name === 'recipes') loadRecipes();
+  if (name === 'calendar') loadCalendar();
   if (name === 'system') loadSystem();
 }
 
@@ -214,6 +215,67 @@ async function deleteRecipe() {
   if (!confirm('Delete this recipe?')) return;
   await api('DELETE', `/api/recipes/${currentRecipeId}`);
   loadRecipes();
+}
+
+// ─── CALENDAR ─────────────────────────────────────────────────────
+async function loadCalendar() {
+  const { authenticated } = await api('GET', '/api/calendar/status');
+  document.getElementById('calendar-auth').style.display = authenticated ? 'none' : 'block';
+  document.getElementById('calendar-connected').style.display = authenticated ? 'block' : 'none';
+  if (authenticated) loadEvents();
+}
+
+async function loadEvents() {
+  const events = await api('GET', '/api/calendar/events');
+  const list = document.getElementById('event-list');
+
+  if (!events.length) {
+    list.innerHTML = '<li>No upcoming events.</li>';
+    return;
+  }
+
+  list.innerHTML = events.map(e => {
+    const start = new Date(e.start).toLocaleString();
+    return `
+      <li>
+        <span style="flex:1">
+          <b>${e.title}</b><br>
+          <small>${start}${e.location ? ' · ' + e.location : ''}</small>
+        </span>
+        <button onclick="deleteEvent('${e.id}')">✕</button>
+      </li>
+    `;
+  }).join('');
+}
+
+async function createEvent() {
+  const title = document.getElementById('event-title').value.trim();
+  const start = document.getElementById('event-start').value;
+  const end = document.getElementById('event-end').value;
+  const description = document.getElementById('event-description').value.trim();
+
+  if (!title || !start || !end) return;
+
+  // Convert local datetime-local value to ISO string
+  await api('POST', '/api/calendar/events', {
+    title,
+    start: new Date(start).toISOString(),
+    end: new Date(end).toISOString(),
+    description
+  });
+
+  document.getElementById('event-title').value = '';
+  document.getElementById('event-start').value = '';
+  document.getElementById('event-end').value = '';
+  document.getElementById('event-description').value = '';
+
+  loadEvents();
+}
+
+async function deleteEvent(id) {
+  if (!confirm('Delete this event from Google Calendar?')) return;
+  await api('DELETE', `/api/calendar/events/${id}`);
+  loadEvents();
 }
 
 // ─── SYSTEM STATUS ────────────────────────────────────────────────

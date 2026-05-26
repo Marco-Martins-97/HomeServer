@@ -17,6 +17,7 @@
     <button onclick="showTab('shopping')">Shopping</button>
     <button onclick="showTab('timers')">Timers</button>
     <button onclick="showTab('recipes')">Recipes</button>
+    <button onclick="showTab('calendar')">Calendar</button>
     <button onclick="showTab('system')">System</button>
   </nav>
 
@@ -77,6 +78,27 @@
         <h4>Steps</h4>
         <pre id="recipe-detail-steps"></pre>
         <button onclick="deleteRecipe()">Delete</button>
+      </div>
+    </section>
+
+    <section id="tab-calendar" style="display:none">
+      <h2>Calendar</h2>
+      <div id="calendar-auth" style="display:none">
+        <p>Not connected to Google Calendar.</p>
+        <a href="/api/calendar/auth"><button>Connect Google Calendar</button></a>
+      </div>
+      <div id="calendar-connected" style="display:none">
+        <div style="margin-bottom:16px">
+          <h3>New Event</h3>
+          <input type="text" id="event-title" placeholder="Title" />
+          <input type="datetime-local" id="event-start" />
+          <input type="datetime-local" id="event-end" />
+          <input type="text" id="event-description" placeholder="Description (optional)" />
+          <button onclick="createEvent()">Add Event</button>
+        </div>
+        <h3>Upcoming Events</h3>
+        <button onclick="loadEvents()">Refresh</button>
+        <ul id="event-list" style="margin-top:12px"></ul>
       </div>
     </section>
 
