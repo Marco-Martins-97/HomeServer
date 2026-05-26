@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,6 +8,7 @@
   <link rel="stylesheet" href="/css/style.css">
   <link rel="manifest" href="/manifest.json">
 </head>
+
 <body>
 
   <!-- Navigation tabs, one per feature -->
@@ -15,6 +17,7 @@
     <button onclick="showTab('shopping')">Shopping</button>
     <button onclick="showTab('timers')">Timers</button>
     <button onclick="showTab('recipes')">Recipes</button>
+    <button onclick="showTab('system')">System</button>
   </nav>
 
   <!-- Each section is hidden/shown by showTab() -->
@@ -77,8 +80,19 @@
       </div>
     </section>
 
+    <section id="tab-system" style="display:none">
+      <h2>System Status</h2>
+      <button onclick="loadSystem()">Refresh</button>
+      <div id="system-info" style="margin-top:16px"></div>
+      <div style="margin-top:24px; display:flex; gap:12px;">
+        <button onclick="confirmAction('restart')" style="background:#e67e22">Restart</button>
+        <button onclick="confirmAction('shutdown')" style="background:#c0392b">Shutdown</button>
+      </div>
+    </section>
+
   </main>
 
   <script src="/js/app.js"></script>
 </body>
+
 </html>

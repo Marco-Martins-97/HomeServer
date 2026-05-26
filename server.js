@@ -16,10 +16,11 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Mount each feature's routes under its own URL prefix
 // e.g. /api/todos maps to src/routes/todos.js
-app.use('/api/todos',    require('./src/routes/todos'));
+app.use('/api/todos', require('./src/routes/todos'));
 app.use('/api/shopping', require('./src/routes/shopping'));
-app.use('/api/timers',   require('./src/routes/timers'));
-app.use('/api/recipes',  require('./src/routes/recipes'));
+app.use('/api/timers', require('./src/routes/timers'));
+app.use('/api/recipes', require('./src/routes/recipes'));
+app.use('/api/system', require('./src/routes/system'));
 
 // Catch-all: any URL not matched above serves index.html
 // This allows the frontend to handle its own navigation

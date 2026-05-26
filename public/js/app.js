@@ -7,10 +7,11 @@ function showTab(name) {
   // Show the requested one
   document.getElementById('tab-' + name).style.display = 'block';
   // Load fresh data for the active tab
-  if (name === 'todos')    loadTodos();
+  if (name === 'todos') loadTodos();
   if (name === 'shopping') loadShopping();
-  if (name === 'timers')   loadTimers();
-  if (name === 'recipes')  loadRecipes();
+  if (name === 'timers') loadTimers();
+  if (name === 'recipes') loadRecipes();
+  if (name === 'system') loadSystem();
 }
 
 // ─── Helper: simple fetch wrapper ────────────────────────────────
@@ -200,9 +201,9 @@ function hideRecipeForm() {
 }
 
 async function saveRecipe() {
-  const title       = document.getElementById('recipe-title').value.trim();
+  const title = document.getElementById('recipe-title').value.trim();
   const ingredients = document.getElementById('recipe-ingredients').value.trim();
-  const steps       = document.getElementById('recipe-steps').value.trim();
+  const steps = document.getElementById('recipe-steps').value.trim();
   if (!title || !ingredients || !steps) return;
   await api('POST', '/api/recipes', { title, ingredients, steps });
   hideRecipeForm();
@@ -213,6 +214,40 @@ async function deleteRecipe() {
   if (!confirm('Delete this recipe?')) return;
   await api('DELETE', `/api/recipes/${currentRecipeId}`);
   loadRecipes();
+}
+
+// ─── SYSTEM STATUS ────────────────────────────────────────────────
+async function loadSystem() {
+  const s = await api('GET', '/api/system');
+  document.getElementById('system-info').innerHTML = `
+    <table style="width:100%; border-collapse:collapse">
+      <tr><td><b>Uptime</b></td><td>${s.uptime}</td></tr>
+      <tr><td><b>CPU</b></td><td>${s.cpu}</td></tr>
+      <tr><td><b>Temperature</b></td><td>${s.temp}</td></tr>
+      <tr><td><b>RAM Used</b></td><td>${s.ram.used} / ${s.ram.total}</td></tr>
+      <tr><td><b>RAM Free</b></td><td>${s.ram.free}</td></tr>
+      <tr><td><b>Disk Used</b></td><td>${s.disk.used} / ${s.disk.total} (${s.disk.percent})</td></tr>
+      <tr><td><b>Disk Free</b></td><td>${s.disk.free}</td></tr>
+      <tr><td><b>IP</b></td><td>${s.network.ip}</td></tr>
+      <tr><td><b>Hostname</b></td><td>${s.network.hostname}</td></tr>
+      <tr><td><b>Wi-Fi</b></td><td>${s.network.ssid}</td></tr>
+      <tr><td><b>Network RX</b></td><td>${s.network.rx}</td></tr>
+      <tr><td><b>Network TX</b></td><td>${s.network.tx}</td></tr>
+    </table>
+  `;
+}
+
+function confirmAction(action) {
+  const msg = action === 'restart'
+    ? 'Are you sure you want to restart the server?'
+    : 'Are you sure you want to shut down the server?';
+  if (!confirm(msg)) return;
+  api('POST', `/api/system/${action}`);
+  if (action === 'restart') {
+    alert('Restarting... the page will be unavailable for about 30 seconds.');
+  } else {
+    alert('Shutting down... the server will go offline.');
+  }
 }
 
 // ─── Load initial tab on page open ───────────────────────────────
