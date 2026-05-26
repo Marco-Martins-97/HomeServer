@@ -1,0 +1,23 @@
+[Unit]
+Description=Home Server Node.js App
+# Only start after the network is up
+After=network.target
+
+[Service]
+# The user who will run the process - not root
+User=admin
+# Absolute path to the project directory
+WorkingDirectory=/home/admin/homeserver
+# The command to start the app
+ExecStart=/usr/local/bin/node /home/admin/homeserver/server.js
+# Restart automatically if it crashes
+Restart=on-failure
+# Wait 5 seconds before restarting (prevents rapid crash loops)
+RestartSec=5
+# Capture logs via journalctl
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+# Start automatically when the system reaches normal multi-user mode
+WantedBy=multi-user.target
