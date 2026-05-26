@@ -3,4 +3,5 @@ homeserver.db
 homeserver.db-shm
 homeserver.db-wal
 certs/
+backups/
 .env
