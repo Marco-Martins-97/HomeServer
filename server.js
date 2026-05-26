@@ -1,5 +1,5 @@
 // server.js — the entry point. Wires everything together.
-
+require('dotenv').config();
 const express = require('express');
 const path = require('path');
 
@@ -21,6 +21,7 @@ app.use('/api/shopping', require('./src/routes/shopping'));
 app.use('/api/timers', require('./src/routes/timers'));
 app.use('/api/recipes', require('./src/routes/recipes'));
 app.use('/api/system', require('./src/routes/system'));
+app.use('/api/calendar', require('./src/routes/calendar'));
 
 // Catch-all: any URL not matched above serves index.html
 // This allows the frontend to handle its own navigation

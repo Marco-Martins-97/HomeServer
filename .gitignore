@@ -5,3 +5,4 @@ homeserver.db-wal
 certs/
 backups/
 .env
+token.json
