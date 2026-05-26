@@ -1,0 +1,12 @@
+[Unit]
+Description=GPIO Shutdown and Restart Buttons
+After=network.target
+
+[Service]
+User=admin
+ExecStart=/usr/bin/python3 /home/admin/homeserver/gpio_buttons.py
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
