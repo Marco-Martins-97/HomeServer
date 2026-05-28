@@ -2,7 +2,7 @@
   "name": "Home Server",
   "short_name": "HomeServer",
   "start_url": "/",
-  "display": "standalone",
+  "display": "fullscreen",
   "background_color": "#f5f5f5",
   "theme_color": "#333333",
   "icons": [
