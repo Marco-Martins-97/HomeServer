@@ -17,7 +17,7 @@
     <button onclick="showTab('shopping')">Shopping</button>
     <button onclick="showTab('timers')">Timers</button>
     <button onclick="showTab('recipes')">Recipes</button>
-    <!-- <button onclick="showTab('calendar')">Calendar</button>  -->
+    <button onclick="showTab('calendar')">Calendar</button>
     <button onclick="showTab('system')">System</button>
   </nav>
 
@@ -81,26 +81,39 @@
       </div>
     </section>
 
-    <!-- <section id="tab-calendar" style="display:none">
+    <section id="tab-calendar" style="display:none">
       <h2>Calendar</h2>
-      <div id="calendar-auth" style="display:none">
-        <p>Not connected to Google Calendar.</p>
-        <a href="/api/calendar/auth"><button>Connect Google Calendar</button></a>
+
+      <!-- View selector -->
+      <div style="display:flex; gap:8px; margin-bottom:16px">
+        <button onclick="setView('daily')">Day</button>
+        <button onclick="setView('weekly')">Week</button>
+        <button onclick="setView('monthly')">Month</button>
       </div>
-      <div id="calendar-connected" style="display:none">
-        <div style="margin-bottom:16px">
-          <h3>New Event</h3>
-          <input type="text" id="event-title" placeholder="Title" />
-          <input type="datetime-local" id="event-start" />
-          <input type="datetime-local" id="event-end" />
-          <input type="text" id="event-description" placeholder="Description (optional)" />
-          <button onclick="createEvent()">Add Event</button>
-        </div>
-        <h3>Upcoming Events</h3>
-        <button onclick="loadEvents()">Refresh</button>
-        <ul id="event-list" style="margin-top:12px"></ul>
+
+      <!-- Date navigator -->
+      <div style="display:flex; align-items:center; gap:12px; margin-bottom:16px">
+        <button onclick="navigateDate(-1)">◀</button>
+        <span id="calendar-range" style="flex:1; text-align:center; font-weight:bold"></span>
+        <button onclick="navigateDate(1)">▶</button>
       </div>
-    </section> -->
+
+      <!-- New task form -->
+      <div style="margin-bottom:16px">
+        <input type="text" id="task-title" placeholder="Task title" />
+        <input type="date" id="task-date" />
+        <select id="task-recurrence"
+          style="width:100%; padding:10px; font-size:16px; margin-bottom:8px; border:1px solid #444; border-radius:6px; background:#2a2a2a; color:#e0e0e0">
+          <option value="none">No recurrence</option>
+          <option value="daily">Daily</option>
+          <option value="weekly">Weekly (same day of week)</option>
+          <option value="monthly">Monthly (same day of month)</option>
+        </select>
+        <button onclick="addCalendarTask()">Add Task</button>
+      </div>
+
+      <ul id="calendar-task-list"></ul>
+    </section>
 
     <section id="tab-system" style="display:none">
       <h2>System Status</h2>
@@ -115,6 +128,18 @@
   </main>
 
   <script src="/js/app.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').then((reg) => {
+        // Ask notification permission and schedule
+        Notification.requestPermission().then((perm) => {
+          if (perm === 'granted' && reg.active) {
+            reg.active.postMessage({ type: 'SCHEDULE_NOTIFICATION' });
+          }
+        });
+      });
+    }
+  </script>
 </body>
 
 </html>

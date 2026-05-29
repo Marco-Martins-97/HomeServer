@@ -20,6 +20,7 @@ app.use('/api/todos', require('./src/routes/todos'));
 app.use('/api/shopping', require('./src/routes/shopping'));
 app.use('/api/timers', require('./src/routes/timers'));
 app.use('/api/recipes', require('./src/routes/recipes'));
+app.use('/api/calendar', require('./src/routes/calendar'));
 app.use('/api/system', require('./src/routes/system'));
 
 // Catch-all: any URL not matched above serves index.html

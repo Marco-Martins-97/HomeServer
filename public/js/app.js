@@ -218,64 +218,84 @@ async function deleteRecipe() {
 }
 
 // ─── CALENDAR ─────────────────────────────────────────────────────
-async function loadCalendar() {
-  const { authenticated } = await api('GET', '/api/calendar/status');
-  document.getElementById('calendar-auth').style.display = authenticated ? 'none' : 'block';
-  document.getElementById('calendar-connected').style.display = authenticated ? 'block' : 'none';
-  if (authenticated) loadEvents();
+let calView = 'weekly';
+let calDate = new Date();
+
+function setView(view) {
+  calView = view;
+  loadCalendar();
 }
 
-async function loadEvents() {
-  const events = await api('GET', '/api/calendar/events');
-  const list = document.getElementById('event-list');
+function navigateDate(dir) {
+  if (calView === 'daily') calDate.setDate(calDate.getDate() + dir);
+  if (calView === 'weekly') calDate.setDate(calDate.getDate() + (dir * 7));
+  if (calView === 'monthly') calDate.setMonth(calDate.getMonth() + dir);
+  loadCalendar();
+}
 
-  if (!events.length) {
-    list.innerHTML = '<li>No upcoming events.</li>';
+function formatDateLabel() {
+  const opts = { year: 'numeric', month: 'long', day: 'numeric' };
+  if (calView === 'daily') {
+    return calDate.toLocaleDateString(undefined, opts);
+  } else if (calView === 'weekly') {
+    const start = new Date(calDate);
+    start.setDate(start.getDate() - start.getDay() + 1);
+    const end = new Date(start);
+    end.setDate(end.getDate() + 6);
+    return `${start.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })} – ${end.toLocaleDateString(undefined, opts)}`;
+  } else {
+    return calDate.toLocaleDateString(undefined, { year: 'numeric', month: 'long' });
+  }
+}
+
+async function loadCalendar() {
+  const dateStr = calDate.toISOString().split('T')[0];
+  document.getElementById('calendar-range').textContent = formatDateLabel();
+
+  const tasks = await api('GET', `/api/calendar/tasks?view=${calView}&date=${dateStr}`);
+  const list = document.getElementById('calendar-task-list');
+
+  if (!tasks.length) {
+    list.innerHTML = '<li style="border:none; background:none">No tasks for this period.</li>';
     return;
   }
 
-  list.innerHTML = events.map(e => {
-    const start = new Date(e.start).toLocaleString();
-    return `
-      <li>
-        <span style="flex:1">
-          <b>${e.title}</b><br>
-          <small>${start}${e.location ? ' · ' + e.location : ''}</small>
-        </span>
-        <button onclick="deleteEvent('${e.id}')">✕</button>
-      </li>
-    `;
-  }).join('');
+  list.innerHTML = tasks.map(t => `
+    <li class="${t.done ? 'done' : ''}">
+      <span style="flex:1; cursor:pointer" onclick="toggleCalendarTask(${t.id})">
+        ${t.title}
+        ${t.recurrence !== 'none' ? `<small style="color:#777"> · ${t.recurrence}</small>` : ''}
+        <br><small style="color:#777">${t.date}</small>
+      </span>
+      <button onclick="deleteCalendarTask(${t.id})">✕</button>
+    </li>
+  `).join('');
 }
 
-async function createEvent() {
-  const title = document.getElementById('event-title').value.trim();
-  const start = document.getElementById('event-start').value;
-  const end = document.getElementById('event-end').value;
-  const description = document.getElementById('event-description').value.trim();
+async function addCalendarTask() {
+  const title = document.getElementById('task-title').value.trim();
+  const date = document.getElementById('task-date').value;
+  const recurrence = document.getElementById('task-recurrence').value;
 
-  if (!title || !start || !end) return;
+  if (!title || !date) return;
 
-  // Convert local datetime-local value to ISO string
-  await api('POST', '/api/calendar/events', {
-    title,
-    start: new Date(start).toISOString(),
-    end: new Date(end).toISOString(),
-    description
-  });
+  await api('POST', '/api/calendar/tasks', { title, date, recurrence });
 
-  document.getElementById('event-title').value = '';
-  document.getElementById('event-start').value = '';
-  document.getElementById('event-end').value = '';
-  document.getElementById('event-description').value = '';
+  document.getElementById('task-title').value = '';
+  document.getElementById('task-date').value = '';
+  document.getElementById('task-recurrence').value = 'none';
 
-  loadEvents();
+  loadCalendar();
 }
 
-async function deleteEvent(id) {
-  if (!confirm('Delete this event from Google Calendar?')) return;
-  await api('DELETE', `/api/calendar/events/${id}`);
-  loadEvents();
+async function toggleCalendarTask(id) {
+  await api('PATCH', `/api/calendar/tasks/${id}/toggle`);
+  loadCalendar();
+}
+
+async function deleteCalendarTask(id) {
+  await api('DELETE', `/api/calendar/tasks/${id}`);
+  loadCalendar();
 }
 
 // ─── SYSTEM STATUS ────────────────────────────────────────────────

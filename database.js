@@ -44,6 +44,15 @@ db.exec(`
     steps TEXT NOT NULL,        -- stored as plain text
     created_at TEXT DEFAULT (datetime('now'))
   );
+
+  CREATE TABLE IF NOT EXISTS calendar_tasks (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT NOT NULL,
+    date TEXT NOT NULL,              -- YYYY-MM-DD, the day this task belongs to
+    done INTEGER DEFAULT 0,
+    recurrence TEXT DEFAULT 'none',  -- none, daily, weekly, monthly
+    created_at TEXT DEFAULT (datetime('now'))
+  );
 `);
 
 // Export the db instance so other files can use it
