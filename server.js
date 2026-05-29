@@ -1,10 +1,10 @@
 // server.js — the entry point. Wires everything together.
-require('dotenv').config();
+// require('dotenv').config();
 const express = require('express');
 const path = require('path');
 
 const app = express();
-const PORT = 3000;
+const PORT = 3001;
 
 // Middleware: parse incoming JSON request bodies
 // Without this, req.body would be undefined in POST/PUT routes

@@ -2,11 +2,13 @@
 
 // ─── Tab Navigation ───────────────────────────────────────────────
 function showTab(name) {
-  // Hide all sections
-  document.querySelectorAll('main section').forEach(s => s.style.display = 'none');
-  // Show the requested one
+  document.querySelectorAll('#content section').forEach(s => s.style.display = 'none');
   document.getElementById('tab-' + name).style.display = 'block';
-  // Load fresh data for the active tab
+
+  // Update active nav button
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+
   if (name === 'todos') loadTodos();
   if (name === 'shopping') loadShopping();
   if (name === 'timers') loadTimers();
